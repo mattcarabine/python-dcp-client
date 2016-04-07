@@ -96,7 +96,7 @@ class DcpClient(object):
         latch = CountdownLatch()
         op = StreamRequest(vbucket, flags, start_seqno, end_seqno, vb_uuid,
                            snap_start, snap_end, latch)
-        self.connection.add_operation(op, host)
+        self.connection.add_operation(host, op)
         ret = op.get_result()
 
         self.lock.release()
