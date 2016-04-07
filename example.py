@@ -3,6 +3,7 @@ import json
 import threading
 import time
 import sys
+import urllib2
 
 from dcp import DcpClient, ResponseHandler
 
@@ -44,10 +45,14 @@ def main():
     handler = MyHandler()
     client = DcpClient()
     args = parse_arguments(sys.argv[1:])
+    endpoint = 'http://{}:8091/pools/default/buckets/{}'.format(args.host,
+                                                                args.bucket)
+    vb_map = json.loads(urllib2.urlopen(endpoint).read())['vBucketServerMap']
+    replicas = get_replica_vbuckets(vb_map, args.host)
     client.connect(args.host, 8091, args.bucket, args.username, args.password,
                    handler)
     while True:
-        for i in range(880, 1024):
+        for i in replicas:
             result = client.add_stream(i, args.host, 0, 0, 1, 0, 0, 0)
             while result['status'] == 2:
                 time.sleep(0.5)
@@ -58,6 +63,12 @@ def main():
 
     client.close()
 
+
+def get_replica_vbuckets(vb_map, host):
+    host += ':11210'
+    node_index = vb_map['serverList'].index(host)
+    replicas = [i for i in xrange(1024) if vb_map['vBucketMap'][1] == node_index]
+    return replicas
 
 def parse_arguments(program_args):
     parser = argparse.ArgumentParser(description='DCP client to reproduce MB-19093')
