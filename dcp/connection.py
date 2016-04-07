@@ -34,8 +34,7 @@ class ConnectionManager(threading.Thread):
             self.readers.append(conn.socket)
             self.connections.append(conn)
 
-    def add_operation(self, operation, vbucket):
-        host = self.bucket_config['vbmap'][vbucket]
+    def add_operation(self, host, operation):
         conn = self._get_connection_by_host(host)
 
         if conn is None:

@@ -38,24 +38,23 @@ class MyHandler(ResponseHandler):
     def get_num_items(self):
         return self.count
 
+
 def main():
     handler = MyHandler()
     client = DcpClient()
-    client.connect('172.23.105.195', 8091, 'bucket-1', 'Administrator', 'password',
+    host = '10.240.0.3'
+    client.connect(host, 8091, 'bucket1', 'Administrator', 'password',
                    handler)
-    for i in range(8):
-        result = client.add_stream(i, 0, 0, 10, 0, 0, 0)
+    for i in range(880, 1024):
+        result = client.add_stream(i, host, 0, 0, 10, 0, 0, 0)
         if result['status'] != 0:
-            print 'Stream request to vb %d failed dur to error %d' %\
+            print 'Stream request to vb %d failed due to error %d' %\
                 (i, result['status'])
 
     while handler.has_active_streams():
         time.sleep(.25)
 
-    print handler.get_num_items()
     client.close()
-    #print json.dumps(client.nodes, sort_keys=True, indent=2)
-    #print json.dumps(client.buckets, sort_keys=True, indent=2)
 
 if __name__ == "__main__":
     main()

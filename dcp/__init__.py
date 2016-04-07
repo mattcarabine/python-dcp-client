@@ -87,7 +87,7 @@ class DcpClient(object):
         self.lock.release()
 
     # Returns true if the stream is successfully created
-    def add_stream(self, vbucket, flags, start_seqno, end_seqno, vb_uuid,
+    def add_stream(self, vbucket, host, flags, start_seqno, end_seqno, vb_uuid,
                    snap_start, snap_end):
         self.lock.acquire()
         if self.connection is None:
@@ -96,7 +96,7 @@ class DcpClient(object):
         latch = CountdownLatch()
         op = StreamRequest(vbucket, flags, start_seqno, end_seqno, vb_uuid,
                            snap_start, snap_end, latch)
-        self.connection.add_operation(op, vbucket)
+        self.connection.add_operation(op, host)
         ret = op.get_result()
 
         self.lock.release()
