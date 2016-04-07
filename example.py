@@ -67,7 +67,7 @@ def main():
 def get_replica_vbuckets(vb_map, host):
     host += ':11210'
     node_index = vb_map['serverList'].index(host)
-    replicas = [i for i in xrange(1024) if vb_map['vBucketMap'][1] == node_index]
+    replicas = [i for i in xrange(1024) if vb_map['vBucketMap'][i][1] == node_index]
     return replicas
 
 def parse_arguments(program_args):
