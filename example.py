@@ -45,13 +45,15 @@ def main():
     host = '10.240.0.3'
     client.connect(host, 8091, 'bucket1', 'Administrator', 'password',
                    handler)
-    for x in range(1, 10000):
+    for x in range(1, 10000, 2):
         for i in range(880, 1024):
-            result = client.add_stream(i, host, 0, x-1, x, 0, 0, 0)
+            result = client.add_stream(i, host, 0, 0, 1, 0, 0, 0)
+            while result['status'] == 2:
+                time.sleep(0.5)
+                result = client.add_stream(i, host, 0, 0, 1, 0, 0, 0)
             if result['status'] != 0:
-                print 'Stream request to vb %d failed due to error %d' %\
-                    (i, result['status'])
-        time.sleep(0.5)
+                print 'Stream request to vb %d failed due to error %d' % \
+                      (i, result['status'])
 
     while handler.has_active_streams():
         time.sleep(.25)
