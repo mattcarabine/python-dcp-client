@@ -35,6 +35,7 @@ class ConnectionManager(threading.Thread):
             self.connections.append(conn)
 
     def add_operation(self, host, operation):
+        host += ':11210'
         conn = self._get_connection_by_host(host)
 
         if conn is None:
